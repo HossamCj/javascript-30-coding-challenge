@@ -1,0 +1,89 @@
+const addItems = document.querySelector('.add-items');
+const itemsList = document.querySelector('.plates');
+const items = JSON.parse(localStorage.getItem('items')) || [];
+
+function addItem (e) {
+    e.preventDefault() 
+    const text = this.querySelector('[name="item"]').value
+
+    const item = {
+        text,
+        done: false
+    }
+
+    items.push(item)
+    populateList(items, itemsList)
+    localStorage.setItem('items', JSON.stringify(items))
+    
+    this.reset()
+}
+
+function populateList(plates = [], platesDomList) {
+    platesDomList.innerHTML = plates.map((plate, i) => {
+        return `
+            <li>
+            <input 
+                type="checkbox"
+                data-index=${i}
+                id="item${i}"
+
+                name='checkItem'
+                
+                ${plate.done ? 'checked' : ''}
+            />
+            <label for="item${i}">${plate.text}</label>
+            </li>
+        `        
+    }).join('')
+
+}
+
+function toggleDone(e) {
+    if (!e.target.matches('input')) return // skip this unless it's an input
+    const el = e.target
+    const index = el.dataset.index
+    items[index].done = !items[index].done
+    localStorage.setItem('items', JSON.stringify(items))
+}
+
+
+addItems.addEventListener('submit', addItem)
+itemsList.addEventListener('click', toggleDone)
+
+populateList(items, itemsList)
+
+// Toggle all the checkboxes -----------------------------------------
+
+// let checkboxes = document.querySelectorAll("input[type='checkbox']")
+// let btn = document.querySelector('button')
+
+// btn.addEventListener('click', () => {
+//     checkboxes.forEach((checkbox) => {
+//         if (checkbox.checked = true) return
+//     })
+// })
+
+const btn = document.querySelector('#all')
+const checkboxes = document.querySelectorAll('[name="checkItem"]')
+
+function toggle0() {
+    if (!btn.checked) {
+        checkboxes.forEach((checkbox) => checkbox.checked = false)
+    }
+    
+    localStorage.setItem('items', JSON.stringify(items))
+}
+
+function toggle1() {
+    if (btn.checked) {
+        checkboxes.forEach((checkbox) => checkbox.checked = true)
+    }
+    
+    localStorage.setItem('items', JSON.stringify(items))
+}
+
+btn.addEventListener('click', toggle0)
+btn.addEventListener('click', toggle1)
+
+
+
